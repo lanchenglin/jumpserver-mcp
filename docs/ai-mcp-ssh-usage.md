@@ -37,7 +37,17 @@
 http://jumpserver.ks.gillion.com.cn/api/swagger.json
 ```
 
-然后通过 `fastapi-mcp` 自动转换为 MCP 工具。实际工具名称和参数由 JumpServer OpenAPI 的 operationId、path、method 和 schema 决定。
+解析每个 API 操作（path + method）并注册为 MCP tool。运行时 MCP 工具调用会代理到 JumpServer REST API。
+
+### Swagger 降级策略
+
+| 优先级 | 来源 | 说明 |
+|--------|------|------|
+| 1 | 远程拉取 | 认证成功后缓存到本地 |
+| 2 | 本地缓存 | `jumpserver_mcp_server/.cache/swagger.json` |
+| 3 | 内置 fallback | 覆盖 26 个核心 API（资产、用户、权限、会话等） |
+
+即使 JumpServer 认证暂时不可用，服务仍可正常启动。
 
 ---
 
@@ -70,7 +80,7 @@ http://jumpserver.ks.gillion.com.cn/api/swagger.json
 
 ## 5. 使用注意
 
-1. 当前 Bearer token 已知可能过期；若 swagger 拉取返回 401，需要更新认证配置。
-2. MCP 工具由 JumpServer OpenAPI 自动生成，工具列表以当前 JumpServer 服务端 schema 为准。
+1. 当前 Bearer token 已过期；认证恢复后服务会自动拉取完整 schema。
+2. MCP 工具由 JumpServer OpenAPI 动态生成，工具列表以当前 schema 为准。
 3. AI 客户端执行资产、用户等管理操作前，应确认 JumpServer API 权限范围。
 4. 建议对外暴露 MCP 服务时配置 `api_key`。
