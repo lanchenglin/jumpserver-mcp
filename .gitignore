@@ -1,17 +1,169 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# ============================================================
+#  通用 — 所有项目必须包含
+# ============================================================
 
-# Virtual environments
-.venv
+# === 敏感配置 ===
 .env
-venv/
-mcp.json
-beartoken_api.sh
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.local
+*.secret
+credentials.json
+service-account*.json
+config.local.yaml
+config.local.json
+config.local.toml
+config.local.ini
+config.private.yaml
+config.private.json
+config.private.toml
+config.private.ini
+# 保留 template 供参考
+!config.yaml.template
+!config.json.template
 
-# Swagger cache
-jumpserver_mcp_server/.cache/
+# === 密钥和证书（零容忍） ===
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa
+id_ed25519
+id_ecdsa
+*.pub          # 公钥看情况，私密环境建议也排除
+ssh_config
+known_hosts
+*.crt          # 自签名证书
+*.ca-bundle
+
+# === AI / 工具链 ===
+.claude/
+.omc/
+.hermes/
+.cursor/
+.windsurf/
+.aider*
+.copilot/
+.codeium/
+.tabby/
+.continue/
+.devai/
+.augment/
+.cline/
+.roo/
+.cody/
+
+# === 本地脚本和文档 ===
+local_scripts/
+local_docs/
+
+# === 运行时产物 ===
+logs/
+*.log
+*.sqlite
+*.db
+
+# === 操作系统 ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================================
+#  Python 项目
+# ============================================================
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.whl
+
+# ============================================================
+#  Node.js 项目
+# ============================================================
+node_modules/
+.npm
+.yarn/
+.pnp.*
+.next/
+.nuxt/
+out/
+.turbo/
+*.tsbuildinfo
+
+# ============================================================
+#  Go 项目
+# ============================================================
+bin/
+tmp/
+*.exe
+*.dll
+*.so
+*.a
+*.test
+
+# ============================================================
+#  Java 项目
+# ============================================================
+target/
+.gradle/
+build/
+*.class
+*.jar
+*.war
+*.ear
+.settings/
+.classpath
+.project
+
+# ============================================================
+#  Rust 项目
+# ============================================================
+target/
+
+# ============================================================
+#  Docker / 容器
+# ============================================================
+docker-compose.override.yml
+.docker/
+*.tar
+*.tar.gz
+
+# ============================================================
+#  CI/CD
+# ============================================================
+# GitHub Actions 运行产物
+.github/workflows/*.tmp
+
+# Jenkins
+.jenkins/
+
+# Terraform 状态（含基础设施敏感信息）
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+terraform.tfvars.json
+
+# Ansible vault
+*.vault
+vault-password.txt
+
+# ============================================================
+#  IDE
+# ============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

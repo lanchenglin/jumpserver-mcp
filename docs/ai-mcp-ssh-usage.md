@@ -1,86 +1,120 @@
-# JumpServer MCP：REST API 工具调用说明
+# JumpServer MCP：SSH/SFTP 工具调用说明
 
-本文档面向接入本 MCP 的 AI 客户端，说明如何通过 MCP 调用 JumpServer REST API 工具。
-
-本服务从 JumpServer OpenAPI `swagger.json` 自动生成 MCP 工具，用于资产管理、用户管理等 JumpServer API 操作；不提供 SSH/SFTP 工具。
+本文档面向接入本 MCP 的 AI 客户端，说明如何通过 MCP 使用 SSH 命令执行和 SFTP 文件操作工具。
 
 ---
 
-## 1. MCP 连接配置
+## 1. 前置配置
+
+SSH/SFTP 工具需要在 `.env` 中配置 JumpServer SSH 网关信息：
+
+```env
+ssh_gateway_host=<your-jumpserver-host>
+ssh_gateway_port=2222
+ssh_gateway_username=<your-username>        # JumpServer 登录用户名
+ssh_gateway_password=<your-password>        # JumpServer 登录密码
+default_system_user=root                    # 默认系统用户
+```
+
+JumpServer 本身就是 SSH 代理服务器，连接格式为 `{gateway_user}@{system_user}@{asset_ip}`，通过 `<jumpserver-host>:2222` 连接。
+
+**注意：** 网关账号密码是服务端配置，调用工具时无需传入。
+
+---
+
+## 2. 工具列表
+
+### jumpserver_ssh_command
+
+通过 JumpServer SSH 网关在指定资产上执行 shell 命令。
+
+**参数：**
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `asset_ip` | 是 | 资产 IP，例如 `192.168.1.100` |
+| `command` | 是 | 要执行的 shell 命令，例如 `df -h` |
+| `system_user` | 否 | 目标资产上的系统用户名，默认使用配置中的 `default_system_user` |
+
+**示例：**
 
 ```json
 {
-  "type": "sse",
-  "url": "http://127.0.0.1:8099/sse"
+  "asset_ip": "192.168.1.100",
+  "command": "df -h"
 }
 ```
 
-若配置了 `api_key` 保护，需在 MCP 客户端 headers 中携带：
+### jumpserver_sftp_upload
+
+通过 SFTP 将内容上传到指定资产的远程路径。提供 `content`（文本）或 `content_base64`（二进制）二选一。
+
+**参数：**
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `asset_ip` | 是 | 资产 IP |
+| `remote_path` | 是 | 远程文件路径，例如 `/tmp/hello.txt` |
+| `content` | 否 | 要写入的文本内容（UTF-8）；与 `content_base64` 二选一 |
+| `content_base64` | 否 | 要写入的二进制内容（Base64 编码）；与 `content` 二选一 |
+| `system_user` | 否 | 默认使用 `default_system_user` |
+
+**示例：**
 
 ```json
 {
-  "type": "sse",
-  "url": "http://<MCP_HOST>:8099/sse",
-  "headers": {
-    "Authorization": "Bearer <api_key>"
-  }
+  "asset_ip": "192.168.1.100",
+  "remote_path": "/tmp/hello.txt",
+  "content": "Hello World"
+}
+```
+
+### jumpserver_sftp_download
+
+从指定资产下载文件内容。返回文本或 Base64（二进制时）。
+
+**参数：**
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `asset_ip` | 是 | 资产 IP |
+| `remote_path` | 是 | 远程文件路径，例如 `/etc/hostname` |
+| `system_user` | 否 | 默认使用 `default_system_user` |
+
+**示例：**
+
+```json
+{
+  "asset_ip": "192.168.1.100",
+  "remote_path": "/etc/hostname"
+}
+```
+
+### jumpserver_sftp_list
+
+列出指定资产远程目录下的文件和子目录。
+
+**参数：**
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `asset_ip` | 是 | 资产 IP |
+| `remote_path` | 是 | 远程目录路径，例如 `/var/log` |
+| `system_user` | 否 | 默认使用 `default_system_user` |
+
+**示例：**
+
+```json
+{
+  "asset_ip": "192.168.1.100",
+  "remote_path": "/var/log"
 }
 ```
 
 ---
 
-## 2. 工具来源
+## 3. 使用注意
 
-服务启动时读取 JumpServer OpenAPI schema：
-
-```txt
-http://<your-jumpserver-host>/api/swagger.json
-```
-
-解析每个 API 操作（path + method）并注册为 MCP tool。运行时 MCP 工具调用会代理到 JumpServer REST API。
-
-### Swagger 降级策略
-
-| 优先级 | 来源 | 说明 |
-|--------|------|------|
-| 1 | 远程拉取 | 认证成功后缓存到本地 |
-| 2 | 本地缓存 | `jumpserver_mcp_server/.cache/swagger.json` |
-| 3 | 内置 fallback | 覆盖 26 个核心 API（资产、用户、权限、会话等） |
-
-即使 JumpServer 认证暂时不可用，服务仍可正常启动。
-
----
-
-## 3. JumpServer API 认证
-
-支持两种认证方式：
-
-| 配置 | 说明 |
-|------|------|
-| `access_key_id` + `access_key_secret` | JumpServer Access Key 签名认证，优先使用 |
-| `api_token` | Bearer token 认证 |
-
-如果同时配置 Access Key 和 Bearer token，服务优先使用 Access Key。
-
-`jms_org_id` 保留兼容；配置后会作为 `X-JMS-ORG` 请求头发送给 JumpServer API。
-
----
-
-## 4. 默认地址
-
-| 配置 | 默认值 |
-|------|--------|
-| `jumpserver_url` | `http://<your-jumpserver-host>` |
-| `swagger_url` | `<jumpserver_url>/api/swagger.json` |
-| `api_base_url` | `<jumpserver_url>/api/v1` |
-
-可通过 `.env` 显式覆盖 `swagger_url` 和 `api_base_url`。
-
----
-
-## 5. 使用注意
-
-1. 当前 Bearer token 已过期；认证恢复后服务会自动拉取完整 schema。
-2. MCP 工具由 JumpServer OpenAPI 动态生成，工具列表以当前 schema 为准。
-3. AI 客户端执行资产、用户等管理操作前，应确认 JumpServer API 权限范围。
-4. 建议对外暴露 MCP 服务时配置 `api_key`。
+1. 这是高权限操作，请谨慎使用，建议在执行前确认命令安全性。
+2. JumpServer 服务端有无 IO 自动断连超时设置（可在 JumpServer 管理后台配置）。
+3. 支持命令策略控制（白名单/黑名单模式），通过 `.env` 中的 `ssh_command_policy_mode` 和 `ssh_command_policy_patterns` 配置。
