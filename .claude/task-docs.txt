@@ -1,0 +1,36 @@
+# 文档更新任务
+
+## 背景
+jumpserver-mcp 项目文档需要更新，并要求全部使用中文。
+
+## 需要改的文件
+
+### 1. CLAUDE.md（/home/lan/jumpserver-mcp/CLAUDE.md）
+- 全部改成中文
+- **脱敏**：把所有真实 URL（http://jumpserver.ks.gillion.com.cn）、用户名（lancl）、密码、Access Key 替换为占位符
+  - `http://jumpserver.ks.gillion.com.cn` → `http://<your-jumpserver-host>`
+  - `lancl` → `<your-username>`
+  - `G@etdetd123` → `<your-password>`
+  - `026e19f4-...` → `<your-access-key-id>`
+  - `tR5qkedbp...` → `<your-access-key-secret>`
+- 保留技术细节：SSH 网关就是 JumpServer 自己（端口 2222）、HMAC-SHA256 签名格式、连接格式 {gateway_user}@{system_user}@{asset_ip}
+- 保留环境信息摘要：241 资产、555 API 路径、1093 工具、30 分钟断连
+
+### 2. README.md
+- 全部改成中文
+- 脱敏所有真实凭据
+- .env 示例只用占位符
+
+### 3. docs/ai-mcp-ssh-usage.md
+- 全部改成中文
+- 脱敏
+
+### 4. .env.example
+- 确认所有值都是占位符，没有真实凭据
+- 添加 SSH 网关说明注释
+
+## 约束
+- 不改代码，只改文档
+- 所有文档用中文
+- 不暴露任何真实 URL、用户名、密码、Token、Access Key
+- 完成后 git commit 并推送

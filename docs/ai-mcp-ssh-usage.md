@@ -34,7 +34,7 @@
 服务启动时读取 JumpServer OpenAPI schema：
 
 ```txt
-http://jumpserver.ks.gillion.com.cn/api/swagger.json
+http://<your-jumpserver-host>/api/swagger.json
 ```
 
 解析每个 API 操作（path + method）并注册为 MCP tool。运行时 MCP 工具调用会代理到 JumpServer REST API。
@@ -70,7 +70,7 @@ http://jumpserver.ks.gillion.com.cn/api/swagger.json
 
 | 配置 | 默认值 |
 |------|--------|
-| `jumpserver_url` | `http://jumpserver.ks.gillion.com.cn` |
+| `jumpserver_url` | `http://<your-jumpserver-host>` |
 | `swagger_url` | `<jumpserver_url>/api/swagger.json` |
 | `api_base_url` | `<jumpserver_url>/api/v1` |
 
