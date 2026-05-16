@@ -37,11 +37,10 @@ def setup_logging(level, debug=False):
         "root": {"handlers": ["default"], "level": level},  # Root logger
         "uvicorn": {"level": level},
         "mcp": {"level": level},
-        "jumpserver_mcp_server": { "level": level},
-        "fastapi_mcp": {"level": "ERROR"},
+        "jumpserver_mcp_server": {"level": level},
     }
     if debug:
-        loggers["fastapi_mcp"] = {"level": level}
+        loggers["mcp"] = {"level": level}
 
     logging_config = LoggingConfig(loggers=loggers, LOG_LEVEL=level)
     from logging.config import dictConfig

@@ -6,9 +6,7 @@ readme = "README.md"
 authors = [{ name = "Eric"}]
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi-mcp==0.3.3",
     "mcp",
-    "httpx",
     "fastapi",
     "pydantic-settings",
     "paramiko",
