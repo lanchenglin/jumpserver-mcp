@@ -1,0 +1,29 @@
+# jumpserver-mcp 方向调整：加回 JumpServer REST API，移除 SSH/SFTP
+
+## 背景变化
+用户只需要 JumpServer REST API 工具（资产管理、用户管理等），不需要 SSH/SFTP。
+
+## 新需求
+1. 移除当前所有 SSH/SFTP 工具和相关代码（connection_pool.py、tools.py 中的 SSH/SFTP 部分）
+2. 加回 JumpServer OpenAPI → MCP 工具自动生成（通过 swagger.json）
+3. 认证方式：支持 Bearer token（api_token）和 Access Key（access_key_id + access_key_secret）
+4. JumpServer URL: http://jumpserver.ks.gillion.com.cn
+5. 保留 fastapi-mcp 或纯 mcp SSE —— 哪种更简单就用哪种
+
+## 约束
+- .env 配置格式与原始版本兼容
+- 支持 api_key 保护 MCP HTTP 接口
+- Python >= 3.11
+- 简单优先，不过度设计
+
+## 关键信息
+- JumpServer swagger 地址：http://jumpserver.ks.gillion.com.cn/api/swagger.json
+- 当前 Bearer token 已过期，先实现代码，认证问题后续解决
+- 不需要 org_id 也先留着兼容
+
+## 执行
+1. 先备份/保留当前 SSH/SFTP 代码到 git（不丢），然后在新分支或同一分支上改
+2. 移除 SSH/SFTP 相关代码
+3. 加回 JumpServer OpenAPI 自动生成 + HTTP API 工具
+4. 更新测试
+5. 更新文档
