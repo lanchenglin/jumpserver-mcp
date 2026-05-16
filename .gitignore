@@ -12,3 +12,6 @@ wheels/
 venv/
 mcp.json
 beartoken_api.sh
+
+# Swagger cache
+jumpserver_mcp_server/.cache/

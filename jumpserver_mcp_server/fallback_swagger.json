@@ -1,0 +1,332 @@
+{
+  "openapi": "3.0.3",
+  "info": {"title": "JumpServer API", "version": "v1"},
+  "paths": {
+    "/assets/assets/": {
+      "get": {
+        "operationId": "assets_assets_list",
+        "summary": "List assets",
+        "description": "Get a paginated list of assets",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer", "default": 1}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer", "default": 20}},
+          {"name": "search", "in": "query", "required": false, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "post": {
+        "operationId": "assets_assets_create",
+        "summary": "Create asset",
+        "description": "Create a new asset",
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {
+            "type": "object",
+            "required": ["hostname", "ip", "platform"],
+            "properties": {
+              "hostname": {"type": "string"},
+              "ip": {"type": "string"},
+              "platform": {"type": "string", "default": "linux"},
+              "protocols": {"type": "array", "items": {"type": "string"}},
+              "is_active": {"type": "boolean", "default": true},
+              "comment": {"type": "string"}
+            }
+          }}}
+        },
+        "responses": {"201": {"description": "Created"}}
+      }
+    },
+    "/assets/assets/{id}/": {
+      "get": {
+        "operationId": "assets_assets_read",
+        "summary": "Get asset",
+        "description": "Retrieve an asset by ID",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "put": {
+        "operationId": "assets_assets_update",
+        "summary": "Update asset",
+        "description": "Update an asset",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+          "content": {"application/json": {"schema": {
+            "type": "object",
+            "properties": {
+              "hostname": {"type": "string"},
+              "ip": {"type": "string"},
+              "platform": {"type": "string"},
+              "is_active": {"type": "boolean"},
+              "comment": {"type": "string"}
+            }
+          }}}
+        },
+        "responses": {"200": {"description": "Success"}}
+      },
+      "delete": {
+        "operationId": "assets_assets_delete",
+        "summary": "Delete asset",
+        "description": "Delete an asset",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"204": {"description": "No Content"}}
+      }
+    },
+    "/assets/nodes/": {
+      "get": {
+        "operationId": "assets_nodes_list",
+        "summary": "List asset nodes",
+        "description": "Get a paginated list of asset nodes",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "search", "in": "query", "required": false, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "post": {
+        "operationId": "assets_nodes_create",
+        "summary": "Create asset node",
+        "description": "Create a new asset node",
+        "requestBody": {
+          "content": {"application/json": {"schema": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "value": {"type": "string"},
+              "parent": {"type": "string"}
+            }
+          }}}
+        },
+        "responses": {"201": {"description": "Created"}}
+      }
+    },
+    "/assets/nodes/{id}/": {
+      "get": {
+        "operationId": "assets_nodes_read",
+        "summary": "Get asset node",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "delete": {
+        "operationId": "assets_nodes_delete",
+        "summary": "Delete asset node",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"204": {"description": "No Content"}}
+      }
+    },
+    "/users/users/": {
+      "get": {
+        "operationId": "users_users_list",
+        "summary": "List users",
+        "description": "Get a paginated list of users",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "search", "in": "query", "required": false, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "post": {
+        "operationId": "users_users_create",
+        "summary": "Create user",
+        "description": "Create a new user",
+        "requestBody": {
+          "content": {"application/json": {"schema": {
+            "type": "object",
+            "required": ["username", "name"],
+            "properties": {
+              "username": {"type": "string"},
+              "name": {"type": "string"},
+              "email": {"type": "string"},
+              "password": {"type": "string"},
+              "is_active": {"type": "boolean", "default": true},
+              "comment": {"type": "string"}
+            }
+          }}}
+        },
+        "responses": {"201": {"description": "Created"}}
+      }
+    },
+    "/users/users/{id}/": {
+      "get": {
+        "operationId": "users_users_read",
+        "summary": "Get user",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "put": {
+        "operationId": "users_users_update",
+        "summary": "Update user",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "requestBody": {
+          "content": {"application/json": {"schema": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "email": {"type": "string"},
+              "is_active": {"type": "boolean"},
+              "comment": {"type": "string"}
+            }
+          }}}
+        },
+        "responses": {"200": {"description": "Success"}}
+      },
+      "delete": {
+        "operationId": "users_users_delete",
+        "summary": "Delete user",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"204": {"description": "No Content"}}
+      }
+    },
+    "/perms/asset-permissions/": {
+      "get": {
+        "operationId": "perms_asset_permissions_list",
+        "summary": "List asset permissions",
+        "description": "Get a paginated list of asset permissions",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "search", "in": "query", "required": false, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "post": {
+        "operationId": "perms_asset_permissions_create",
+        "summary": "Create asset permission",
+        "description": "Create a new asset permission rule",
+        "requestBody": {
+          "content": {"application/json": {"schema": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string"},
+              "users": {"type": "array", "items": {"type": "string"}},
+              "user_groups": {"type": "array", "items": {"type": "string"}},
+              "assets": {"type": "array", "items": {"type": "string"}},
+              "nodes": {"type": "array", "items": {"type": "string"}},
+              "system_users": {"type": "array", "items": {"type": "string"}},
+              "actions": {"type": "array", "items": {"type": "integer"}},
+              "is_active": {"type": "boolean", "default": true},
+              "date_start": {"type": "string", "format": "date-time"},
+              "date_expired": {"type": "string", "format": "date-time"}
+            }
+          }}}
+        },
+        "responses": {"201": {"description": "Created"}}
+      }
+    },
+    "/perms/asset-permissions/{id}/": {
+      "get": {
+        "operationId": "perms_asset_permissions_read",
+        "summary": "Get asset permission",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"200": {"description": "Success"}}
+      },
+      "delete": {
+        "operationId": "perms_asset_permissions_delete",
+        "summary": "Delete asset permission",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {"204": {"description": "No Content"}}
+      }
+    },
+    "/assets/admin-user/": {
+      "get": {
+        "operationId": "assets_admin_user_list",
+        "summary": "List admin users",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      }
+    },
+    "/assets/system-user/": {
+      "get": {
+        "operationId": "assets_system_user_list",
+        "summary": "List system users",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "search", "in": "query", "required": false, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      }
+    },
+    "/assets/gateway/": {
+      "get": {
+        "operationId": "assets_gateway_list",
+        "summary": "List gateways",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      }
+    },
+    "/assets/domains/": {
+      "get": {
+        "operationId": "assets_domains_list",
+        "summary": "List domains",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      }
+    },
+    "/ops/command-executions/": {
+      "post": {
+        "operationId": "ops_command_executions_create",
+        "summary": "Execute command",
+        "description": "Execute a command on assets",
+        "requestBody": {
+          "content": {"application/json": {"schema": {
+            "type": "object",
+            "required": ["run_as", "hosts", "command"],
+            "properties": {
+              "run_as": {"type": "string", "description": "System user ID"},
+              "hosts": {"type": "array", "items": {"type": "string"}, "description": "Asset IDs"},
+              "command": {"type": "string"}
+            }
+          }}}
+        },
+        "responses": {"201": {"description": "Created"}}
+      }
+    },
+    "/terminal/sessions/": {
+      "get": {
+        "operationId": "terminal_sessions_list",
+        "summary": "List sessions",
+        "description": "Get a paginated list of terminal sessions",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "search", "in": "query", "required": false, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      }
+    },
+    "/audits/ftp-logs/": {
+      "get": {
+        "operationId": "audits_ftp_logs_list",
+        "summary": "List FTP logs",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      }
+    },
+    "/audits/operational-logs/": {
+      "get": {
+        "operationId": "audits_operational_logs_list",
+        "summary": "List operational logs",
+        "parameters": [
+          {"name": "page", "in": "query", "required": false, "schema": {"type": "integer"}},
+          {"name": "page_size", "in": "query", "required": false, "schema": {"type": "integer"}}
+        ],
+        "responses": {"200": {"description": "Success"}}
+      }
+    }
+  }
+}

@@ -7,11 +7,20 @@ import typing
 from email.utils import formatdate
 from typing import Any
 
+import json
+from logging import getLogger
+from pathlib import Path
+
 import httpx
 
 from .config import settings
 
+logger = getLogger(__name__)
+
 HTTP_OK = 200
+SWAGGER_CACHE_DIR = Path(__file__).resolve().parent / ".cache"
+SWAGGER_CACHE_FILE = SWAGGER_CACHE_DIR / "swagger.json"
+FALLBACK_SWAGGER_FILE = Path(__file__).resolve().parent / "fallback_swagger.json"
 
 
 class BearerAuth(httpx.Auth):
@@ -98,6 +107,17 @@ def build_base_headers(jms_org_id: str) -> dict[str, str]:
     return headers
 
 
+def _save_swagger_cache(data: dict[str, Any]) -> None:
+    SWAGGER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    SWAGGER_CACHE_FILE.write_text(json.dumps(data, ensure_ascii=False))
+
+
+def _load_swagger_cache() -> dict[str, Any] | None:
+    if not SWAGGER_CACHE_FILE.exists():
+        return None
+    return json.loads(SWAGGER_CACHE_FILE.read_text())
+
+
 def get_swagger_json(url: str) -> dict[str, Any]:
     kwargs: dict[str, Any] = {"verify": False, "timeout": 120}
     auth = build_api_auth(
@@ -107,9 +127,23 @@ def get_swagger_json(url: str) -> dict[str, Any]:
     )
     if auth is not None:
         kwargs["auth"] = auth
-    response = httpx.get(url, **kwargs)
-    if response.status_code != HTTP_OK:
-        raise OpenAPISchemaFetchError(
-            f"Failed to fetch OpenAPI schema: {response.status_code} - {response.text}"
-        )
-    return response.json()
+    try:
+        response = httpx.get(url, **kwargs)
+        if response.status_code == HTTP_OK:
+            data = response.json()
+            _save_swagger_cache(data)
+            return data
+    except httpx.HTTPError:
+        pass
+    except Exception:
+        pass
+    cached = _load_swagger_cache()
+    if cached is not None:
+        logger.warning("Using cached OpenAPI schema (remote fetch failed)")
+        return cached
+    if FALLBACK_SWAGGER_FILE.exists():
+        logger.warning("Using bundled fallback OpenAPI schema (remote fetch failed, no cache)")
+        return json.loads(FALLBACK_SWAGGER_FILE.read_text())
+    raise OpenAPISchemaFetchError(
+        f"Failed to fetch OpenAPI schema from {url} and no cached version available"
+    )

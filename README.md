@@ -64,7 +64,9 @@ http://jumpserver.ks.gillion.com.cn/api/v1
 
 If `api_base_url` is configured, that value is used instead.
 
-The MCP tool list is generated from JumpServer's OpenAPI operations by `fastapi-mcp`.
+The MCP tool list is generated dynamically from the JumpServer OpenAPI schema. Each API operation becomes an MCP tool that proxies requests to JumpServer.
+
+If the remote swagger fetch fails (e.g., token expired), the server falls back to a cached copy, then to a bundled fallback schema covering core APIs. When authentication is restored, a fresh schema is fetched and cached automatically.
 
 ## Authentication
 
