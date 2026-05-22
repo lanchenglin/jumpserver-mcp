@@ -189,9 +189,9 @@ class SSHConnectionPool:
         client = paramiko.SSHClient()
         if self.gateway_known_hosts_path:
             client.load_host_keys(self.gateway_known_hosts_path)
+            client.set_missing_host_key_policy(paramiko.RejectPolicy())
         else:
-            client.load_system_host_keys()
-        client.set_missing_host_key_policy(paramiko.RejectPolicy())
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         kwargs = {
             "hostname": self.gateway_host,
             "port": self.gateway_port,

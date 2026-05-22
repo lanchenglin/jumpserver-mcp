@@ -1,0 +1,9 @@
+services:
+  jumpserver-mcp:
+    build: .
+    ports:
+      - "${SERVER_PORT:-8099}:8099"
+    env_file:
+      - .env
+    network_mode: host
+    restart: unless-stopped
