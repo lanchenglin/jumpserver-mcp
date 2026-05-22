@@ -101,6 +101,8 @@ class JumpServerTools:
 
     def call(self, name: str, arguments: dict[str, Any]) -> str:
         try:
+            if name == "jumpserver_check_host":
+                return self._check_host(arguments)
             if name == "jumpserver_ssh_command":
                 return self._ssh_command(arguments)
             if name == "jumpserver_sftp_upload":
@@ -135,6 +137,19 @@ class JumpServerTools:
         if _has_ssh_username_separator(system_user):
             raise ValueError("system_user 不能包含 @ 或空白字符")
         return asset_ip, system_user
+
+    def _check_host(self, arguments: dict[str, Any]) -> str:
+        asset_ip, system_user = self._common(arguments)
+        try:
+            result = self.pool.run_command(asset_ip, system_user, "echo ok", timeout=10)
+            reachable = result.exit_status == 0 and "ok" in result.stdout
+        except Exception:
+            reachable = False
+        return build_tool_result(
+            True,
+            "OK",
+            data={"asset_ip": asset_ip, "system_user": system_user, "reachable": reachable},
+        )
 
     def _ssh_command(self, arguments: dict[str, Any]) -> str:
         asset_ip, system_user = self._common(arguments)
